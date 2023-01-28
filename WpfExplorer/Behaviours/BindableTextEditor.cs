@@ -8,6 +8,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
+using WpfExplorer.Models;
 
 namespace WpfExplorer.Behaviours
 {
@@ -22,17 +24,18 @@ namespace WpfExplorer.Behaviours
             BTextProperty = DependencyProperty.Register("BText", typeof(string), typeof(BindableTextEditor),
                 new FrameworkPropertyMetadata
                 {
-                     PropertyChangedCallback =
+                    PropertyChangedCallback =
                     (obj, args) =>
                     {
-                        BindableTextEditor target = (BindableTextEditor)obj;
-
-                        target.Document.Text = (string)args.NewValue ?? "";
+                        if (obj is BindableTextEditor)
+                        {
+                            BindableTextEditor target = (BindableTextEditor) obj;
+                            target.Document.Text = (string)args.NewValue ?? "";
+                        }
                     },
 
                      DefaultValue = default(string),
                      BindsTwoWayByDefault = true
-
                 }
             );
         }
@@ -43,30 +46,10 @@ namespace WpfExplorer.Behaviours
             set { SetValue(BTextProperty, value); RaisePropertyChanged("BText"); }
         }
 
-        protected static void OnDependencyPropertyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs args)
-        {
-            var target = (BindableTextEditor)obj;
-
-            if (target.Document != null)
-            {
-                var caretOffset = target.CaretOffset;
-                var newValue = args.NewValue;
-
-                if (newValue == null)
-                {
-                    newValue = "";
-                }
-
-                target.Document.Text = (string)newValue;
-                target.CaretOffset = Math.Min(caretOffset, newValue.ToString().Length);
-            }
-        }
-
         protected override void OnTextChanged(EventArgs e)
         {
             if (this.Document != null)
             {
-                //base.Text = this.Document.Text;
                 //Console.WriteLine(Document.Text);
             }
             base.OnTextChanged(e);

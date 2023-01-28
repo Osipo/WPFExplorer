@@ -40,6 +40,7 @@ namespace WpfExplorer.ViewModels
 
            _headerTemplateSel.DataTemplates.Add(key, dt);
            _contentTemplateSel.DataTemplates.Add(key, dt);
+           
         }
 
         public DataTemplateSelector HeaderContentSelector { get { return _headerTemplateSel; } }

@@ -13,7 +13,8 @@
     <Page.Resources>
         <local:BindingProxy x:Key="tabPanelVMProxy" Data="{Binding ElementName=tabPanel, Path=DataContext.CloseTabCommand}"/>
         <local:BindingProxy x:Key="tabPanelSelectedTab" Data="{Binding ElementName=tabPanel, Path=SelectedItem}"/>
-        
+        <!--<local:BindingProxy x:Key="tabItemEditor" Data="{Binding ElementName=textFile, Path=BText}"/>-->
+
         <DataTemplate x:Key="tabHeader" DataType="{x:Type local:FileEditorModel}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Left" Text="{Binding FileName}"></TextBlock>
@@ -41,7 +42,7 @@
                                 FontSize="14pt"
                                 ShowLineNumbers="True"
                                 VerticalScrollBarVisibility="Visible"
-                                BText="{Binding Path=FileContent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Document="{Binding Path=Document}"
                 >
                 </beh:BindableTextEditor>
             </Grid>

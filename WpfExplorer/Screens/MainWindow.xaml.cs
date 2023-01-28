@@ -32,7 +32,7 @@ namespace WpfExplorer
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-ru"); //en-US
             InitializeComponent();
 
-            TimerBackgroundWorker w = new TimerBackgroundWorker(); //default interval = 1 second.
+            TimerBackgroundWorker w = new TimerBackgroundWorker(); //default interval = 1 second. cyclic worker.
             w.DoWork += (sender, e) => { Dispatcher.Invoke(UpdateClockDisplay); };
             w.Start();
         }
@@ -53,7 +53,7 @@ namespace WpfExplorer
         {
             CultureInfo ci = CultureInfo.CurrentCulture;
             DateTime dt = DateTime.Now;
-            textDate.Text = dt.ToString("U");
+            textDate.Text = dt.ToString("F"); //F - full LocalDateTime, U - full UniversalDateTime (UTC)
         }
     }
 }

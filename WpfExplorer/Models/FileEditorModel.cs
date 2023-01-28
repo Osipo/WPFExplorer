@@ -1,18 +1,21 @@
 ﻿using DevExpress.Mvvm;
+using ICSharpCode.AvalonEdit.Document;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using WpfExplorer.ViewModels;
 
 namespace WpfExplorer.Models
 {
-    public class FileEditorModel : ViewModelBaseWithGuid
+    public class FileEditorModel : ViewModelBaseWithGuid, INotifyPropertyChanged
     {
 
         private string _filePath;
@@ -20,6 +23,7 @@ namespace WpfExplorer.Models
         private string _newFileName;
         private string _filecontent;
         private double _progress;
+        private TextDocument _doc;
 
         public FileEditorModel() : this("new 1")
         {
@@ -30,9 +34,17 @@ namespace WpfExplorer.Models
             _filePath = null;
             _fileName = fileName;
             _newFileName = fileName;
+            _filecontent = "";
             _progress = 0.0;
+            flushDocument();
         }
 
+        private void flushDocument()
+        {
+            Document = new TextDocument();
+            Document.TextChanged += (s, e) => { FileContent = Document.Text; };
+            Document.Text = FileContent;
+        }
 
         public String FileName
         {
@@ -48,8 +60,10 @@ namespace WpfExplorer.Models
         public String FileContent
         {
             get { return _filecontent; }
-            set { _filecontent = value; RaisePropertiesChanged("FileContent"); }
+            set { _filecontent = value; }
         }
+
+        public TextDocument  Document { get { return _doc; } set { _doc = value; } }
 
         public Double Progress
         {
@@ -60,10 +74,11 @@ namespace WpfExplorer.Models
         public System.Windows.Input.ICommand CloseFileCommand => new DelegateCommand(() =>
         {
             Progress = 0.0;
-            //FileContent = ""; //tricky hack. null -> empty -> null.
-            FileContent = null;
+            FileContent = "";
             FilePath = null;
             FileName = _newFileName;
+            flushDocument();
+            
         });
 
         public System.Windows.Input.ICommand OpenFileCommand => new DelegateCommand(() => {
@@ -90,10 +105,7 @@ namespace WpfExplorer.Models
             if (FilePath == null)
                 return;
             FileName = Path.GetFileName(FilePath);
-
-            BackgroundWorker worker = new BackgroundWorker();
-            worker.DoWork += new DoWorkEventHandler(DoSaveFileAsync);
-            worker.RunWorkerAsync(FilePath);
+            await DoSaveFileAsync(FilePath); //wait UI til whole content saved.
         });
 
         private async void DoReadFileAsync(object sender, DoWorkEventArgs e)
@@ -112,15 +124,15 @@ namespace WpfExplorer.Models
                     Progress = ((double)curBytes / reader.Length); //ratio of bytes for progressBar.
                 }
             }
-
             FileContent = sb.ToString();
-            Console.WriteLine("file has been read. Finish task.");
+            App.Current.Dispatcher.Invoke(flushDocument);
+            
             sb.Clear();
         }
 
-        private async void DoSaveFileAsync(object sender, DoWorkEventArgs e)
+        private async Task DoSaveFileAsync(string filePath)
         {
-            string filePath = e.Argument.ToString();
+            //string filePath = e.Argument.ToString();
             int line = 0;
             string[] lines = FileContent.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -136,7 +148,6 @@ namespace WpfExplorer.Models
                 }
             }
         }
-
       
     }
 }

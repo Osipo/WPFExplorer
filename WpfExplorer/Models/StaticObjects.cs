@@ -11,5 +11,6 @@ namespace WpfExplorer.Models
         public static readonly object True = true;
         public static readonly object False = false;
         public static readonly object Reciever = new ViewModels.ViewModelBaseWithGuid();
+        public static readonly object Lock = new object();
     }
 }
