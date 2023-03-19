@@ -29,6 +29,8 @@ namespace WpfExplorer.ViewModels
                 if(CurrentPage != null && page != null && (page == CurrentPage || page.GetType() == CurrentPage.GetType())) return;
                 CurrentPage = page;
             };
+
+            //On Create Instance Add Notification message to Global Reciever.
             var sub = _messageService.Subscribe<TextMessage>(StaticObjects.Reciever, async msg => {
                 await Task.Delay(1);
                 Console.WriteLine(msg);
@@ -44,8 +46,11 @@ namespace WpfExplorer.ViewModels
 
             Page p = Activator.CreateInstance(t, args:null) as Page;
             _pageService.ChangePage(p);
-            await _messageService.SendToAll(
+
+            //Show all TextMessage of Reciever.
+            await _messageService.SendTo(
                 new TextMessage("(" + _messageService.Subscribers + ")" + " navigated to " + p.GetType().FullName)
+                ,StaticObjects.Reciever
             );
         });
     }

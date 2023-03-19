@@ -18,6 +18,12 @@ namespace WpfExplorer.Services
             _consumers = new ConcurrentDictionary<MessageSubscriber, Func<IMessage, Task>>();
         }
 
+
+        public async Task SendTo(IMessage message, object reciever)
+        {
+            await SendTo(message, MessageSubscriber.ExtractGuidFromVM(reciever));
+        }
+
         public async Task SendTo(IMessage message, Guid? reciever)
         {
             var messageType = message.GetType();

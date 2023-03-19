@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using WpfExplorer.Models.Markov;
 using WpfExplorer.ViewModels;
 
 namespace WpfExplorer.Models
@@ -25,6 +26,9 @@ namespace WpfExplorer.Models
         private double _progress;
         private TextDocument _doc;
 
+        private MarkovModel _textGenModel;
+        private ComboboxConnectionsViewModel _comboVM;
+
         public FileEditorModel() : this("new 1")
         {
         }
@@ -36,7 +40,20 @@ namespace WpfExplorer.Models
             _newFileName = fileName;
             _filecontent = "";
             _progress = 0.0;
+
+
+            //Registrate one message for this Tab.
+            var ms = (App.Current.Resources["servicelocator"] as ViewModelServiceLocator).MessageService;
+            if (ms != null)
+                ms.Subscribe<TextMessage>(this, async msg => { 
+                    await Task.Delay(1);
+                    Console.WriteLine(msg);
+                });
+
             flushDocument();
+
+            _textGenModel = new MarkovModel(1000, 2); //nhash = 1000, prefix = 2.
+            _comboVM = new ComboboxConnectionsViewModel();
         }
 
         private void flushDocument()
@@ -55,7 +72,7 @@ namespace WpfExplorer.Models
         public String FilePath
         {
             get { return _filePath; }
-            set { _filePath = value;  }
+            set { _filePath = value; }
         }
         public String FileContent
         {
@@ -63,7 +80,9 @@ namespace WpfExplorer.Models
             set { _filecontent = value; }
         }
 
-        public TextDocument  Document { get { return _doc; } set { _doc = value; } }
+        public ComboboxConnectionsViewModel ComboVM { get { return _comboVM; } }
+
+        public TextDocument Document { get { return _doc; } set { _doc = value; } }
 
         public Double Progress
         {
@@ -78,7 +97,7 @@ namespace WpfExplorer.Models
             FilePath = null;
             FileName = _newFileName;
             flushDocument();
-            
+
         });
 
         public System.Windows.Input.ICommand OpenFileCommand => new DelegateCommand(() => {
@@ -90,7 +109,7 @@ namespace WpfExplorer.Models
 
                 BackgroundWorker worker = new BackgroundWorker();
                 worker.DoWork += new DoWorkEventHandler(DoReadFileAsync);
-                worker.RunWorkerAsync(FilePath);
+                worker.RunWorkerAsync(FilePath); //do not block UI.
             }
         });
 
@@ -106,6 +125,23 @@ namespace WpfExplorer.Models
                 return;
             FileName = Path.GetFileName(FilePath);
             await DoSaveFileAsync(FilePath); //wait UI til whole content saved.
+        });
+
+
+        
+        public System.Windows.Input.ICommand ContinueTextCommand => new DelegateCommand(async () => {
+
+            
+            await Task.Delay(5000); //wait 5 sec.
+
+            FileContent = "Random text generated.";
+            flushDocument();
+            
+            
+            //call service to show all TextMessages for this tab.
+            var ms = (App.Current.Resources["servicelocator"] as ViewModelServiceLocator).MessageService;
+            if (ms != null)
+                await ms.SendTo(new TextMessage(_fileName + ": " + " continueTextCommand finished."), this);
         });
 
         private async void DoReadFileAsync(object sender, DoWorkEventArgs e)

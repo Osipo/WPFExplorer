@@ -13,29 +13,133 @@
     <Page.Resources>
         <local:BindingProxy x:Key="tabPanelVMProxy" Data="{Binding ElementName=tabPanel, Path=DataContext.CloseTabCommand}"/>
         <local:BindingProxy x:Key="tabPanelSelectedTab" Data="{Binding ElementName=tabPanel, Path=SelectedItem}"/>
+
+        <local:BindingProxy x:Key="comboBoxItemVMProxy" Data="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.ComboVM}"/>
+        
+
+
         <!--<local:BindingProxy x:Key="tabItemEditor" Data="{Binding ElementName=textFile, Path=BText}"/>-->
+
+        <!-- Colors -->
+        <SolidColorBrush x:Key="primaryBlueColor" Color="#348EF6"/>
+        <SolidColorBrush x:Key="secondaryBlueColor" Color="#BBBBBB"/>
+
+        <SolidColorBrush x:Key="primaryGrayColor" Color="#BBC1D1"/>
+        <SolidColorBrush x:Key="secondaryGrayColor" Color="#BBDFFF"/>
+        <SolidColorBrush x:Key="tabitemPanelColor" Color="#dceef5"/>
+
+        <Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0 0 0 0"/>
+            <Setter Property="Width" Value="100"/>
+            <!--<Setter Property="Padding" Value="10 5"/>-->
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            
+            <!--
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid SnapsToDevicePixels="True">
+                            <Border
+                                CornerRadius="5 5 0 0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Margin="{TemplateBinding Margin}"
+                                >
+                                <ContentPresenter 
+                                    Margin="{TemplateBinding Margin}"
+                                    SnapsToDevicePixels="False"
+                                    RecognizesAccessKey="True"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
+                                    Focusable="False"
+                                    ContentSource="Header"
+                                />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource secondaryGrayColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            -->
+        </Style>
+
+       
 
         <DataTemplate x:Key="tabHeader" DataType="{x:Type local:FileEditorModel}">
             <DockPanel>
                 <TextBlock DockPanel.Dock="Left" Text="{Binding FileName}"></TextBlock>
-                <Button Command="{Binding Source={StaticResource tabPanelVMProxy}, Path=Data}" CommandParameter="{Binding Source={StaticResource tabPanelSelectedTab},Path=Data}"  Margin="5,0,0,0" Padding="0" DockPanel.Dock="Right">X
+                <Button Foreground="White" SnapsToDevicePixels="True" Background="Red" Command="{Binding Source={StaticResource tabPanelVMProxy}, Path=Data}" CommandParameter="{Binding Source={StaticResource tabPanelSelectedTab},Path=Data}"  Margin="5,0,0,0" Padding="0" DockPanel.Dock="Right">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border x:Name="btnCloseBorder"
+                                    Padding="5 2 5 2"
+                                    CornerRadius="20" 
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}"
+                                    Height="{TemplateBinding Height}"
+                                    Width="{TemplateBinding Width}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="X"/>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="btnCloseBorder" Property="Background" Value="Red"/>
+                                    <Setter TargetName="btnCloseBorder" Property="BorderBrush" Value="#F05000"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
                 </Button>
             </DockPanel>
             <DataTemplate.Triggers>
-                
+
             </DataTemplate.Triggers>
         </DataTemplate>
         <DataTemplate x:Key="addHeader" DataType="{x:Type local:FileEditorModel}">
             <TextBlock Text="{Binding FileName}" />
         </DataTemplate>
+
+        <DataTemplate x:Key="comboItem" DataType="{x:Type local:ConnectionItem}">
+            <TextBlock Text="{Binding ConnectionName}"/>
+        </DataTemplate>
+        
         <DataTemplate x:Key="tabItem" DataType="{x:Type local:FileEditorModel}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="20"/>
+                    <RowDefinition Height="20"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <ProgressBar Minimum="0" Maximum="1.00" Grid.Row="0" Value="{Binding Progress}"/>
-                <beh:BindableTextEditor Grid.Row="1"
+
+                <Border Grid.Row="1" Background="{StaticResource tabitemPanelColor}">
+                    <ComboBox  Width="100"
+                        IsEditable="True" IsReadOnly="True"
+                        DataContext="{Binding ComboVM}"
+                        ItemsSource="{Binding Connections}"
+                        ItemTemplate="{StaticResource comboItem}"
+                        SelectedItem="{Binding Mode=TwoWay, Path=SelectedItem}"
+                    />
+                </Border>
+                <beh:BindableTextEditor Grid.Row="2"
                                 xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                                 x:Name="textFile"
                                 FontFamily="Consolas"    
@@ -59,14 +163,27 @@
             <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.OpenFileCommand}">Open File</Button>
             <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.SaveFileCommand}">Save File</Button>
             <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.CloseFileCommand}">Close File</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.ContinueTextCommand}">Generate Text</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource comboBoxItemVMProxy}, Path=Data.ShowSelectedComboItem}">Execute</Button>
         </StackPanel>
         <GridSplitter Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="False" Height="3"/>
-        <TabControl TabStripPlacement="Top" x:Name="tabPanel" Grid.Row="2"
+        <Grid Grid.Row="2" Background="{DynamicResource secondaryBlueColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border CornerRadius="10" Padding="0">
+                <TabControl Grid.Row="0" Grid.Column="0" TabStripPlacement="Top" x:Name="tabPanel"
                     SelectedItem="{Binding Mode=TwoWay, Path=SelectedItem}"
                     ItemsSource="{Binding Files}"
                     c:TabContent.IsCached="True"
+                    ItemContainerStyle="{DynamicResource tabItemStyle}"
                     c:TabContent.TemplateSelector="{Binding ContentTemplateSelector}"
                     ItemTemplateSelector="{Binding HeaderContentSelector}"
-        />
+                />
+            </Border>
+        </Grid>
     </Grid>
 </Page>

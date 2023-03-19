@@ -32,6 +32,7 @@ namespace WpfExplorer
             Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-ru"); //en-US
             InitializeComponent();
 
+            //create clock thread for current datetime.
             TimerBackgroundWorker w = new TimerBackgroundWorker(); //default interval = 1 second. cyclic worker.
             w.DoWork += (sender, e) => { Dispatcher.Invoke(UpdateClockDisplay); };
             w.Start();

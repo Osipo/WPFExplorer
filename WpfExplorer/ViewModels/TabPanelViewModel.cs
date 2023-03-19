@@ -13,7 +13,7 @@ using WpfExplorer.Models;
 
 namespace WpfExplorer.ViewModels
 {
-    public class TabPanelViewModel : ViewModelBaseWithGuid, INotifyPropertyChanged
+    public class TabPanelViewModel : SelectionViewModelBaseWithGuid<FileEditorModel> /*ViewModelBaseWithGuid*/ , INotifyPropertyChanged
     {
 
         private TabItemTemplateSelector<FileEditorModel> _headerTemplateSel;
@@ -43,9 +43,22 @@ namespace WpfExplorer.ViewModels
            
         }
 
+        protected override void ProcessSelected(FileEditorModel item)
+        {
+            if (item.FileName != null && item.FileName.Equals("+"))
+            {
+                string name = "new " + Files.Count;
+                var ntabItem = new FileEditorModel(name);
+                Files.Insert(Files.Count - 1, ntabItem);
+                SelectedItem = ntabItem;
+            }
+        }
+
         public DataTemplateSelector HeaderContentSelector { get { return _headerTemplateSel; } }
         public DataTemplateSelector ContentTemplateSelector { get { return _contentTemplateSel; } }
 
+
+        /*
         public FileEditorModel SelectedItem { get; set; }
 
         private void SelectedChange(object sender, PropertyChangedEventArgs e)
@@ -63,7 +76,7 @@ namespace WpfExplorer.ViewModels
                 SelectedItem = ntabItem;
             }
         }
-
+        */
 
         //Close tab button command.
         private RelayCommand _closeTab;

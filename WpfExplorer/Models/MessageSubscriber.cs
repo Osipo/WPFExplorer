@@ -48,7 +48,7 @@ namespace WpfExplorer.Models
             _action?.Invoke(this);
         }
 
-        private static Guid? ExtractGuidFromVM(object reciever)
+        public static Guid? ExtractGuidFromVM(object reciever)
         {
             Guid? r = null;
             if(

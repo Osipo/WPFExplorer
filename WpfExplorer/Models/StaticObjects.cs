@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WpfExplorer.Models
 {
+    /* Global objects */
     public class StaticObjects
     {
         public static readonly object True = true;

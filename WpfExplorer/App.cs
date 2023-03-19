@@ -25,11 +25,10 @@ namespace WpfExplorer
         private void App_Startup(object sender, StartupEventArgs e)
         {
             ResourceDictionary appResources = new ResourceDictionary();
-            appResources.Add("servicelocator", new ViewModelServiceLocator());
+            appResources.Add("servicelocator", new ViewModelServiceLocator()); //add global servicelocator as Application Resource.
             this.Resources.MergedDictionaries.Add(appResources);
+
             ViewModelServiceLocator.Init();
-
-
 
             this.StartupUri = new System.Uri("Screens/MainWindow.xaml", System.UriKind.Relative);
         }

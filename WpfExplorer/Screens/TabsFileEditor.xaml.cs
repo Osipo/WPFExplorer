@@ -34,6 +34,7 @@ namespace WpfExplorer.Screens
                 if (entry.Value != null && entry.Value.GetType() == typeof(DataTemplate))
                 {
                     vm.AddToSelectors((string)entry.Key, (DataTemplate)entry.Value);
+                    
                 }
             }
 

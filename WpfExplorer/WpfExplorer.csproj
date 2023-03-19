@@ -90,11 +90,16 @@
     <Compile Include="Behaviours\BindableTextEditor.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Models\BindingProxy.cs" />
+    <Compile Include="Models\ConnectionItem.cs" />
     <Compile Include="Models\FileEditorModel.cs" />
+    <Compile Include="Models\Markov\MarkovModel.cs" />
+    <Compile Include="Models\Markov\State.cs" />
+    <Compile Include="Models\Markov\Suffix.cs" />
     <Compile Include="Models\StaticObjects.cs" />
     <Compile Include="Models\IMessage.cs" />
     <Compile Include="Models\MessageSubscriber.cs" />
     <Compile Include="Models\TextMessage.cs" />
+    <Compile Include="Models\Utils\StringUtils.cs" />
     <Compile Include="Screens\TabsFileEditor.xaml.cs">
       <DependentUpon>TabsFileEditor.xaml</DependentUpon>
     </Compile>
@@ -105,8 +110,10 @@
     <Compile Include="Services\ViewModelServiceLocator.cs" />
     <Compile Include="Services\PageService.cs" />
     <Compile Include="Selectors\TabItemTemplateSelector.cs" />
+    <Compile Include="ViewModels\ComboboxConnectionsViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PageableViewModel.cs" />
+    <Compile Include="ViewModels\SelectionViewModelBaseWithGuid.cs" />
     <Compile Include="ViewModels\TabPanelViewModel.cs" />
     <Compile Include="ViewModels\TilesViewModel.cs" />
     <Compile Include="ViewModels\ViewModelBaseWithGuid.cs" />

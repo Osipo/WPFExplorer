@@ -72,7 +72,7 @@ namespace WpfExplorer.Workers
         public void Stop()
         {
             this.CancelAsync();
-            this.intervalManualReset?.Set();
+            this.intervalManualReset?.Set(); //unblock all threads.
             this.Dispose(true);
         }
 
@@ -80,8 +80,8 @@ namespace WpfExplorer.Workers
         {
             if (this.intervalManualReset != null)
             {
-                this.intervalManualReset.Reset();
-                this.intervalManualReset.WaitOne(this.Interval);
+                this.intervalManualReset.Reset(); //call reset (manually) to block all threads.
+                this.intervalManualReset.WaitOne(this.Interval); //wait 1 second for signal.
             }
         }
     }

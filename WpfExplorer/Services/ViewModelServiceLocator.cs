@@ -40,5 +40,7 @@ namespace WpfExplorer
         public TilesViewModel TilesViewModel { get { return _provider.GetRequiredService<TilesViewModel>(); } }
 
         public TabPanelViewModel TabPanelViewModel { get { return _provider.GetRequiredService<TabPanelViewModel>(); } }
+
+        public MessageService MessageService { get { return _provider.GetRequiredService<MessageService>(); } }
     }
 }
