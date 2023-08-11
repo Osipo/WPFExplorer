@@ -1,0 +1,57 @@
+﻿<Window x:Class="WpfExplorer.Screens.ConnectionFormWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfExplorer.Screens"
+        mc:Ignorable="d"
+        Title="New Connection" Height="280" Width="300">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Server Name:</Label>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="ServerName"/>
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1">
+
+        </Border>
+
+        <Label Grid.Row="1" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Port:</Label>
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="Port"/>
+        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1 0 1 1">
+
+        </Border>
+
+        <Label Grid.Row="2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">DbName:</Label>
+        <TextBox Grid.Row="2" Grid.Column="1" x:Name="Catalog"/>
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1 0 1 1">
+
+        </Border>
+
+        <Label Grid.Row="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">User:</Label>
+        <TextBox Grid.Row="3" Grid.Column="1" x:Name="Login"/>
+        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1 0 1 1">
+
+        </Border>
+
+        <Label Grid.Row="4" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">Password:</Label>
+        <TextBox Grid.Row="4" Grid.Column="1" x:Name="Password"/>
+        <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" BorderBrush="Gray" BorderThickness="1 0 1 1">
+
+        </Border>
+        <StackPanel Width="Auto" Grid.Row="5" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1">
+            <Button Margin="0 0 20 0" Width="60" Click="Button_Click_Ok">OK</Button>
+            <Button Margin="0 0 20 0" Width="60" Click="Button_Click_Cancel">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

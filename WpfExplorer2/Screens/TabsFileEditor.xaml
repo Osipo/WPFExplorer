@@ -1,0 +1,298 @@
+﻿<Page x:Class="WpfExplorer.Screens.TabsFileEditor"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:WpfExplorer.Models"
+      xmlns:locallist="clr-namespace:WpfExplorer.Models.Lists"
+      xmlns:vm="clr-namespace:WpfExplorer.ViewModels"
+      xmlns:beh="clr-namespace:WpfExplorer.Behaviours"
+      xmlns:c="clr-namespace:WpfExplorerControl.Control"
+      xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit;assembly=ICSharpCode.AvalonEdit" 
+      xmlns:i="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="TabsFileEditor">
+    <Page.Resources>
+        <local:BindingProxy x:Key="tabPanelVMProxyCloseCmd" Data="{Binding ElementName=tabPanel, Path=DataContext.CloseTabCommand}"/>
+        <local:BindingProxy x:Key="tabPanelSelectedTab" Data="{Binding ElementName=tabPanel, Path=SelectedItem}"/>
+
+        <!-- Colors -->
+        <SolidColorBrush x:Key="primaryBlueColor" Color="#348EF6"/>
+        <SolidColorBrush x:Key="secondaryBlueColor" Color="#BBBBBB"/>
+
+        <SolidColorBrush x:Key="primaryGrayColor" Color="#BBC1D1"/>
+        <SolidColorBrush x:Key="secondaryGrayColor" Color="#BBDFFF"/>
+        <SolidColorBrush x:Key="tabitemPanelColor" Color="#dceef5"/>
+
+        <Style x:Key="tabItemStyle" TargetType="{x:Type TabItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0 0 0 0"/>
+            <Setter Property="Width" Value="100"/>
+            <!--<Setter Property="Padding" Value="10 5"/>-->
+            <Setter Property="FontWeight" Value="ExtraBold"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+
+            <!--
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid SnapsToDevicePixels="True">
+                            <Border
+                                CornerRadius="5 5 0 0"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Margin="{TemplateBinding Margin}"
+                                >
+                                <ContentPresenter 
+                                    Margin="{TemplateBinding Margin}"
+                                    SnapsToDevicePixels="False"
+                                    RecognizesAccessKey="True"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Left"
+                                    Focusable="False"
+                                    ContentSource="Header"
+                                />
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource secondaryGrayColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="White"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            -->
+
+
+        </Style>
+        
+        
+       
+        <HierarchicalDataTemplate x:Key="treeItem" DataType="{x:Type locallist:ProcItem}" ItemsSource="{Binding Path=Children}">
+            <TextBlock Text="{Binding Name}"/>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate x:Key="tabHeader" DataType="{x:Type local:FileEditorModel}">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Left" Text="{Binding FileName}"></TextBlock>
+                <Button Foreground="White" SnapsToDevicePixels="True" Background="Red" Command="{Binding Source={StaticResource tabPanelVMProxyCloseCmd}, Path=Data}" CommandParameter="{Binding Source={StaticResource tabPanelSelectedTab},Path=Data}"  Margin="5,0,0,0" Padding="0" DockPanel.Dock="Right">
+                    <Button.Template>
+                        <ControlTemplate>
+                            <Border x:Name="btnCloseBorder"
+                                    Padding="5 2 5 2"
+                                    CornerRadius="20" 
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}"
+                                    Height="{TemplateBinding Height}"
+                                    Width="{TemplateBinding Width}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Content="X"/>
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="btnCloseBorder" Property="Background" Value="Red"/>
+                                    <Setter TargetName="btnCloseBorder" Property="BorderBrush" Value="#F05000"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </DockPanel>
+            <DataTemplate.Triggers>
+
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="addHeader" DataType="{x:Type local:FileEditorModel}">
+            <TextBlock Text="{Binding FileName}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="comboItem" DataType="{x:Type local:ConnectionItem}">
+            <TextBlock Text="{Binding ConnectionName}"/>
+        </DataTemplate>
+
+        <DataTemplate x:Key="tabItem" DataType="{x:Type local:FileEditorModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="20"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="300"/>
+                </Grid.ColumnDefinitions>
+                <Border BorderBrush="Black" BorderThickness="1">
+                    <Grid Grid.Row="0" Grid.Column="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="100"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Grid.Column="0">Find or Replace All: </TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="0">To: </TextBlock>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Path=FindReplace.SearchString}"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Path=FindReplace.ReplaceString}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="0">Global Replace: </TextBlock>
+                        <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding Path=FindReplace.IsGlobal}"/>
+                        <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Command="{Binding FindReplaceCommand}">Apply</Button>
+                    </Grid>
+                </Border>
+                <GridSplitter Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="False" Height="3"/>
+                <ProgressBar Minimum="0" Maximum="1.00" Grid.Row="2" Grid.Column="0" Value="{Binding Progress}"/>
+                <beh:BindableTextEditor vm:TabPanelViewModel.ContentLoaded="true" Grid.Row="3" Grid.Column="0"
+                                xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                                x:Name="textFile"
+                                FontFamily="Consolas"    
+                                FontSize="14pt"
+                                ShowLineNumbers="True"
+                                VerticalScrollBarVisibility="Visible"
+                                Document="{Binding Path=Document}"
+                                BText="{Binding FileContent}"
+                >
+                </beh:BindableTextEditor>
+                <GridSplitter Grid.Row="4" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="False" Height="3"/>
+                <DataGrid vm:TabPanelViewModel.ContentLoaded="true" x:Name="grid" Grid.Row="5" Grid.Column="0" />
+                <StackPanel Grid.Row="6" Grid.Column="0" Orientation="Horizontal" FlowDirection="LeftToRight">
+                    <TextBlock TextWrapping="Wrap" Text="Words: "/>
+                    <TextBlock Text="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.Words.WordCount}" Margin="0 0 100 0"/>
+
+                    <TextBlock TextWrapping="Wrap" Text="MinWord: "/>
+                    <TextBlock Text="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.Words.MinWordLength}" Margin="0 0 100 0" />
+
+                    <TextBlock TextWrapping="Wrap" Text="MaxWord: "/>
+                    <TextBlock Text="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.Words.MaxWordLength}" Margin="0 0 100 0" />
+
+                    <TextBlock Text="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.TextPosition.PositionStr}" />
+                </StackPanel>
+
+                <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="6" VerticalAlignment="Stretch" HorizontalAlignment="Center" ShowsPreview="False" Width="3"/>
+                <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0.7*"/>
+                            <ColumnDefinition Width="0.3*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" FontSize="18" x:Name="searchTreeStr"></TextBox>
+                        <Button Grid.Row="0" Grid.Column="1" Command="{Binding Path=SearchTree.FindTreeCommand}">Find</Button>
+                    </Grid>
+
+                    <TreeView vm:TabPanelViewModel.ContentLoaded="true" Grid.Row="1" x:Name="ProcTree" ItemsSource="{Binding Path=Procedures}"
+                              ItemTemplate="{Binding Source={StaticResource treeItem}}">
+                        <TreeView.ItemContainerStyle>
+                            <Style TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type HeaderedItemsControl}">
+                                            <StackPanel>
+                                                <Grid>
+                                                    <Rectangle Fill="{TemplateBinding Background}"/>
+                                                    <ContentPresenter ContentSource="Header"/>
+                                                </Grid>
+                                                <Grid>
+                                                    <Rectangle Stroke="{TemplateBinding BorderBrush}"/>
+                                                    <ItemsPresenter Margin="2,0,0,0"/>
+                                                </Grid>
+                                            </StackPanel>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="Background" Value="Blue"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                    </Trigger>
+                                    <MultiTrigger>
+                                        <MultiTrigger.Conditions>
+                                            <Condition Property="IsFocused" Value="False"/>
+                                            <Condition Property="IsSelected" Value="True"/>
+                                        </MultiTrigger.Conditions>
+                                        <MultiTrigger.Setters>
+                                            <Setter Property="Background" Value="#F0E0FF"/>
+                                            <Setter Property="Foreground" Value="Gray"/>
+                                        </MultiTrigger.Setters>
+                                    </MultiTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TreeView.ItemContainerStyle>
+                    </TreeView>
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button VerticalAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding Path=ProcedureTreeViewModel.ClearCommand}" Width="100" Height="25">Clear All</Button>
+                        <Button VerticalAlignment="Center" HorizontalContentAlignment="Center" Command="{Binding Path=ProcedureTreeViewModel.AddTestCommand}" Width="100" Height="25">Add Test</Button>
+                        <Button VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding Path=ApplyAllCommand}" Width="100" Height="25">Apply All</Button>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </DataTemplate>
+        
+        
+        
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.OpenFileCommand}">Open File</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.SaveFileCommand}">Save File</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.CloseFileCommand}">Close File</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.ConnectCommand}">Connect...</Button>
+            <Button Width="100" Command="{Binding Source={StaticResource tabPanelSelectedTab}, Path=Data.ExecuteCommand}">Execute</Button>
+        </StackPanel>
+        <GridSplitter Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="False" Height="3"/>
+        <Grid Grid.Row="2" Background="{DynamicResource secondaryBlueColor}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border CornerRadius="10" Padding="0">
+                <TabControl Grid.Row="0" Grid.Column="0" TabStripPlacement="Top" x:Name="tabPanel"
+                    SelectedItem="{Binding Mode=TwoWay, Path=SelectedItem}"
+                    ItemsSource="{Binding Files}"
+                    c:TabContent.IsCached="True"
+                    ItemContainerStyle="{DynamicResource tabItemStyle}"
+                    c:TabContent.TemplateSelector="{Binding ContentTemplateSelector}"
+                    ItemTemplateSelector="{Binding HeaderContentSelector}"
+                />
+            </Border>
+        </Grid>
+    </Grid>
+</Page>
